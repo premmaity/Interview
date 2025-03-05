@@ -1,0 +1,150 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: system-ui, sans-serif;
+}
+
+.status-indicator {
+  text-align: center;
+  padding: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.status-indicator.listening {
+  background: #4CAF50;
+  color: white;
+}
+
+.chatbox {
+  height: 60vh;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  background: white;
+}
+
+.message-container {
+  display: flex;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.user-container {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+}
+
+.user-avatar {
+  background: #2196F3;
+  color: white;
+}
+
+.message-content {
+  max-width: 70%;
+}
+
+.user {
+  background: #2196F3;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.assistant {
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.message-timestamp {
+  font-size: 12px;
+  color: #666;
+}
+
+.mic-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #2196F3;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.mic-button:hover {
+  background: #1976D2;
+}
+
+.mic-button.listening {
+  background: #f44336;
+}
+
+.listening-tip {
+  text-align: center;
+  margin-top: 12px;
+  color: #666;
+}
+
+.welcome-message {
+  text-align: center;
+  padding: 20px;
+}
+
+.welcome-message h2 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.instructions {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.instructions p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.speaking {
+  position: relative;
+}
+
+.speaking-indicator {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.speaking-indicator span {
+  width: 4px;
+  height: 16px;
+  background: currentColor;
+  animation: speak 1s ease-in-out infinite;
+}
+
+.speaking-indicator span:nth-child(2) { animation-delay: 0.1s; }
+.speaking-indicator span:nth-child(3) { animation-delay: 0.2s; }
+.speaking-indicator span:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes speak {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}

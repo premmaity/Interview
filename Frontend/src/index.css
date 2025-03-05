@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Custom scrollbar styles for the chat container */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: linear-gradient(135deg, #f3f3f3, #e0e0e0);
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6b7280, #374151);
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #4b5563, #1f2937);
+  }
+  
+  /* Container for the scrollable chat content */
+.chat-content {
+    height: 100%;
+  }
+  
+  /* Fixed Listening Indicator positioned at the top right of the chat window container */
+  .fixed-indicator {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    z-index: 10;
+    background-color: #10B981; /* Emerald green */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Stunning custom scrollbar styles for the chat content */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: linear-gradient(135deg, #f3f3f3, #e0e0e0);
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6b7280, #374151);
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #4b5563, #1f2937);
+  }
+  
