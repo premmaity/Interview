@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-dotenv
+python-jose[cryptography]
+pydantic
+groq
+RealtimeTTS
