@@ -1,7 +1,8 @@
-fastapi
-uvicorn
-python-dotenv
-python-jose[cryptography]
-pydantic
-groq
-RealtimeTTS
+fastapi==0.95.0
+uvicorn==0.22.0
+python-dotenv==1.0.0
+python-jose[cryptography]==3.3.0
+pydantic==1.10.4
+groq==0.1.0
+RealtimeTTS==1.2.3
+python-multipart==0.0.5
