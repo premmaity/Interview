@@ -2,20 +2,17 @@ import os
 import hashlib
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, Header, Query
+from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-# Use python-jose for JWT operations
 from jose import jwt, JWTError
 
-# Import your TTS and Groq modules (ensure these are in your PYTHONPATH)
 from groq import Groq
 from RealtimeTTS import TextToAudioStream, EdgeEngine
 
-# Load environment variables from the .env file
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -28,7 +25,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15))
 
 app = FastAPI()
 
-# Allow all CORS (adjust for production)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,25 +33,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static directory for audio files
 os.makedirs("static", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Initialize the Groq clients using API keys from environment variables.
 TECH_GROQ_API_KEY = os.getenv("TECH_GROQ_API_KEY")
 groq_client = Groq(api_key=TECH_GROQ_API_KEY)
 
 HR_GROQ_API_KEY = os.getenv("HR_GROQ_API_KEY")
 hr_groq_client = Groq(api_key=HR_GROQ_API_KEY)
 
-# -----------------------
-# In-Memory "Database"
-# -----------------------
 users = {}
 user_conversations = {}  # username -> {"technical": [...], "hr": [...]}
 user_streams = {}        # username -> TTS stream instance
 
-# System prompts for the interviews
 technical_prompt = """
 You are an interviewer at a software company.
 Ask the candidate 5 short, unique technical questions about topics like OOPs, DBMS, and DSA.
@@ -76,9 +66,6 @@ At the end, provide concise feedback on the candidate's soft skills and overall 
 Avoid bullet points, asterisks, or special formatting.
 """
 
-# -----------------------
-# Utility Functions
-# -----------------------
 def get_password_hash(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -110,9 +97,6 @@ def get_current_user(authorization: str = Header(None), token: str = Query(None)
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
-# -----------------------
-# Pydantic Models
-# -----------------------
 class UserRegister(BaseModel):
     username: str
     email: str
@@ -124,12 +108,8 @@ class UserLogin(BaseModel):
 
 class QueryRequest(BaseModel):
     text: str
-    round: str = "technical"  # can be "technical" or "hr"
+    round: str = "technical"  # "technical" or "hr"
     stop_audio: bool = False
-
-# -----------------------
-# Endpoints
-# -----------------------
 
 @app.post("/register")
 async def register(user: UserRegister):
@@ -158,7 +138,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 def stop_audio_for_user(username: str):
     if username in user_streams:
-        user_streams[username].stop()
+        try:
+            user_streams[username].player.stop()
+        except Exception as e:
+            print("Error stopping stream:", e)
         del user_streams[username]
 
 @app.get("/stop_audio")
@@ -167,7 +150,10 @@ async def stop_audio(current_user: dict = Depends(get_current_user)):
     stop_audio_for_user(username)
     return {"status": f"Audio stopped for user {username}"}
 
-def generate_speech_async(text: str, username: str):
+# --------------------------------------------------------------------
+# Updated audio generation: Synchronous generation with error handling.
+# --------------------------------------------------------------------
+def generate_speech_sync(text: str, username: str):
     if username not in user_streams:
         tts_engine = EdgeEngine()
         tts_engine.set_voice("en-GB-RyanNeural")
@@ -176,7 +162,17 @@ def generate_speech_async(text: str, username: str):
         user_streams[username] = TextToAudioStream(tts_engine)
     stream = user_streams[username]
     stream.feed(text)
-    audio_data = stream.play()
+    try:
+        # Attempt to generate the audio data.
+        audio_data = stream.play()
+    except BrokenPipeError:
+        # Catch and log the error, then stop the stream to recover.
+        try:
+            stream.player.stop()
+        except Exception as e:
+            print("Error stopping player after BrokenPipeError:", e)
+        # Optionally, you could retry or handle the error differently.
+        audio_data = b""
     audio_file_path = os.path.join("static", f"{username}_response.mp3")
     with open(audio_file_path, "wb") as f:
         f.write(audio_data)
@@ -184,7 +180,6 @@ def generate_speech_async(text: str, username: str):
 @app.post("/query")
 async def query(
     request: QueryRequest,
-    background_tasks: BackgroundTasks,
     current_user: dict = Depends(get_current_user)
 ):
     username = current_user["username"]
@@ -209,12 +204,16 @@ async def query(
             )
         response_text = chat_completion.choices[0].message.content.strip()
         conversation_history.append({"role": "assistant", "content": response_text})
-        background_tasks.add_task(generate_speech_async, response_text, username)
+        # Generate the audio synchronously so it's available immediately.
+        generate_speech_sync(response_text, username)
         return {"response": response_text}
     except Exception as e:
         return {"response": f"Error: {str(e)}"}
 
-@app.get("/response.mp3")
+# -----------------------
+# Allow GET and HEAD for the audio file.
+# -----------------------
+@app.api_route("/response.mp3", methods=["GET", "HEAD"])
 async def get_audio(current_user: dict = Depends(get_current_user)):
     username = current_user["username"]
     audio_file_path = os.path.join("static", f"{username}_response.mp3")
