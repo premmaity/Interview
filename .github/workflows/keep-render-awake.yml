@@ -1,0 +1,26 @@
+name: Keep Render service awake
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-render-service-awake
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping the public liveness endpoint
+        run: >-
+          curl --fail --silent --show-error
+          --max-time 60
+          --retry 2
+          --retry-delay 5
+          https://interview-mentor-premmaity.onrender.com/health/live
