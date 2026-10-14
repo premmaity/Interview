@@ -2,7 +2,7 @@ name: Keep Render service awake
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '3,8,13,18,23,28,33,38,43,48,53,58 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -15,12 +15,16 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 4
     steps:
       - name: Ping the public liveness endpoint
-        run: >-
-          curl --fail --silent --show-error
-          --max-time 60
-          --retry 2
-          --retry-delay 5
-          https://interview-mentor-premmaity.onrender.com/health/live
+        shell: bash
+        run: |
+          for attempt in {1..8}; do
+            if curl --fail --silent --show-error --max-time 30 \
+              https://interview-mentor-premmaity.onrender.com/health/live; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1
