@@ -2,12 +2,14 @@ import time
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -121,3 +123,17 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(profile_router, prefix="/api/v1")
 app.include_router(interviews_router, prefix="/api/v1")
 app.include_router(audio_router, prefix="/api/v1")
+
+if settings.static_dir:
+    static_root = Path(settings.static_dir).resolve()
+    assets_root = static_root / "assets"
+    index_file = static_root / "index.html"
+    if assets_root.is_dir() and index_file.is_file():
+        app.mount("/assets", StaticFiles(directory=assets_root), name="frontend-assets")
+
+        @app.get("/{requested_path:path}", include_in_schema=False)
+        async def frontend(requested_path: str) -> FileResponse:
+            candidate = (static_root / requested_path).resolve()
+            if candidate.is_relative_to(static_root) and candidate.is_file():
+                return FileResponse(candidate)
+            return FileResponse(index_file)

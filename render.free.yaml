@@ -1,0 +1,40 @@
+databases:
+  - name: interview-mentor-premmaity-postgres
+    databaseName: interview
+    user: interview
+    plan: free
+
+services:
+  - type: keyvalue
+    name: interview-mentor-premmaity-redis
+    plan: free
+    ipAllowList: []
+
+  - type: web
+    name: interview-mentor-premmaity
+    runtime: docker
+    plan: free
+    dockerfilePath: ./infra/render-free.Dockerfile
+    healthCheckPath: /health/ready
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interview-mentor-premmaity-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: interview-mentor-premmaity-redis
+          type: keyvalue
+          property: connectionString
+      - key: FRONTEND_ORIGIN
+        value: https://interview-mentor-premmaity.onrender.com
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: lax
+      - key: AI_PROVIDER
+        value: fake
+      - key: EVALUATION_DISPATCH
+        value: inline
