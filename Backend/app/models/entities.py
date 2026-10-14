@@ -73,6 +73,9 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     sessions: Mapped[list["InterviewSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    keepalive_projects: Mapped[list["KeepAliveProject"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class AuthSession(UUIDPrimaryKeyMixin, Base):
@@ -112,6 +115,27 @@ class CandidateProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         CheckConstraint(
             "years_experience >= 0 AND years_experience <= 80", name="experience_range"
         ),
+    )
+
+
+class KeepAliveProject(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "keepalive_projects"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    url: Mapped[str] = mapped_column(String(2048), nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, index=True)
+    last_ping_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_status_code: Mapped[int | None] = mapped_column(Integer)
+    last_error: Mapped[str | None] = mapped_column(String(300))
+
+    user: Mapped[User] = relationship(back_populates="keepalive_projects")
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "url", name="uq_keepalive_project_user_url"),
+        Index("ix_keepalive_projects_enabled_updated", "enabled", "updated_at"),
     )
 
 

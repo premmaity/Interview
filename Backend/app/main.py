@@ -1,3 +1,4 @@
+import asyncio
 import time
 import uuid
 from collections.abc import AsyncIterator
@@ -17,10 +18,12 @@ from app.api.health import router as health_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.interviews import audio_router
 from app.api.v1.interviews import router as interviews_router
+from app.api.v1.keepalive import router as keepalive_router
 from app.api.v1.profile import router as profile_router
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
+from app.services.keepalive import keepalive_scheduler
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -30,8 +33,13 @@ logger = structlog.get_logger()
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     logger.info("application_started", environment=settings.app_env)
-    yield
-    logger.info("application_stopped")
+    scheduler = asyncio.create_task(keepalive_scheduler(settings.keepalive_interval_seconds))
+    try:
+        yield
+    finally:
+        scheduler.cancel()
+        await asyncio.gather(scheduler, return_exceptions=True)
+        logger.info("application_stopped")
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
@@ -125,6 +133,7 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(profile_router, prefix="/api/v1")
 app.include_router(interviews_router, prefix="/api/v1")
 app.include_router(audio_router, prefix="/api/v1")
+app.include_router(keepalive_router, prefix="/api/v1")
 
 if settings.static_dir:
     static_root = Path(settings.static_dir).resolve()

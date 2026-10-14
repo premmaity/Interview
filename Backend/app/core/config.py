@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     raw_audio_retention_hours: int = Field(default=0, ge=0, le=24)
     log_level: str = "INFO"
     evaluation_dispatch: Literal["inline", "redis"] = "inline"
+    keepalive_interval_seconds: int = Field(default=600, ge=60, le=3600)
     static_dir: str | None = None
 
     @field_validator("database_url", mode="before")

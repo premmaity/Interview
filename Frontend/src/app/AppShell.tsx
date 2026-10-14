@@ -1,4 +1,4 @@
-import { BookOpen, History, LayoutDashboard, LogOut, Settings, Sparkles, UserRound } from 'lucide-react'
+import { BookOpen, History, LayoutDashboard, LogOut, RadioTower, Settings, Sparkles, UserRound } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { useAuth } from './AuthProvider'
@@ -7,6 +7,7 @@ const links = [
   { to: '/app', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/app/interviews/new', label: 'New interview', icon: Sparkles },
   { to: '/app/history', label: 'History', icon: History },
+  { to: '/app/keep-alive', label: 'Keep alive', icon: RadioTower },
   { to: '/app/profile', label: 'Profile', icon: UserRound },
   { to: '/app/settings', label: 'Privacy', icon: Settings },
 ]
@@ -48,4 +49,3 @@ export function AppShell() {
     </div>
   )
 }
-

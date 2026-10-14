@@ -85,3 +85,17 @@ export interface Report {
   disclaimer: string
 }
 
+export interface KeepAliveProject {
+  id: string
+  name: string
+  url: string
+  enabled: boolean
+  last_ping_at: string | null
+  last_status_code: number | null
+  last_error: string | null
+  created_at: string
+}
+
+export interface KeepAliveProjectList {
+  items: KeepAliveProject[]
+}

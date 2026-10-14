@@ -51,3 +51,23 @@ test('voice mode exposes cross-browser recording, question audio, and editable t
     timeout: 150_000,
   })
 })
+
+test('candidate can add and control a Render keep-alive project', async ({ page }) => {
+  await registerAndSignIn(page)
+  await page.getByRole('link', { name: /keep alive/i }).click()
+  await page.getByLabel('Project name').fill('Interview Mentor')
+  await page.getByLabel('Render link').fill(
+    'https://interview-mentor-premmaity.onrender.com/health/live',
+  )
+  await page.getByRole('button', { name: /add project/i }).click()
+
+  await expect(page.getByRole('heading', { name: 'Interview Mentor' })).toBeVisible()
+  const keepAliveSwitch = page.getByRole('switch')
+  await expect(keepAliveSwitch).toHaveAttribute('aria-checked', 'false')
+  await keepAliveSwitch.click()
+  await expect(keepAliveSwitch).toHaveAttribute('aria-checked', 'true')
+  await keepAliveSwitch.click()
+  await expect(keepAliveSwitch).toHaveAttribute('aria-checked', 'false')
+  await page.getByRole('button', { name: /delete interview mentor/i }).click()
+  await expect(page.getByText(/no render projects yet/i)).toBeVisible()
+})
