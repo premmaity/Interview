@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#071b18" />
+    <title>Render Awake</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #061310;
+        --panel: #0b211d;
+        --panel-2: #102c26;
+        --line: #25473f;
+        --text: #f5f7e9;
+        --muted: #9fb8b0;
+        --lime: #d9ff72;
+        --green: #55e6b1;
+        --red: #ff887c;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 0%, rgba(85, 230, 177, 0.13), transparent 28rem),
+          radial-gradient(circle at 95% 25%, rgba(217, 255, 114, 0.09), transparent 30rem),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+
+      .shell {
+        width: min(1080px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 38px 0 70px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--green);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.15rem, 7vw, 4.6rem);
+        letter-spacing: -0.055em;
+        line-height: 0.95;
+      }
+
+      .subtitle {
+        max-width: 620px;
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(11, 33, 29, 0.78);
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 5px rgba(85, 230, 177, 0.12);
+      }
+
+      .notice {
+        display: flex;
+        gap: 12px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+        border: 1px solid #5d5630;
+        border-radius: 15px;
+        background: rgba(75, 65, 20, 0.22);
+        color: #f4e8a4;
+        line-height: 1.5;
+      }
+
+      .notice strong { color: #fff2a9; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: linear-gradient(145deg, rgba(16, 44, 38, 0.94), rgba(9, 29, 25, 0.96));
+        box-shadow: var(--shadow);
+      }
+
+      .form-panel { padding: 24px; }
+      .projects-panel { padding: 20px; }
+
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+        letter-spacing: -0.02em;
+      }
+
+      .help {
+        margin: 0 0 22px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cfe0da;
+        font-size: 0.78rem;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      input {
+        width: 100%;
+        min-height: 48px;
+        margin-bottom: 16px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        outline: none;
+        background: rgba(4, 18, 15, 0.82);
+        color: var(--text);
+      }
+
+      input:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(85, 230, 177, 0.12);
+      }
+
+      .primary {
+        width: 100%;
+        min-height: 48px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--lime);
+        color: #112016;
+        font-weight: 850;
+      }
+
+      .summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 15px;
+        padding: 4px;
+      }
+
+      .count {
+        color: var(--lime);
+        font-size: 0.86rem;
+        font-weight: 800;
+      }
+
+      .run-now {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+        background: transparent;
+        color: var(--text);
+        font-weight: 750;
+      }
+
+      .run-now:hover { border-color: var(--green); }
+
+      .list { display: grid; gap: 12px; }
+
+      .card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 15px;
+        padding: 17px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: rgba(4, 18, 15, 0.58);
+      }
+
+      .card h3 {
+        margin: 0 0 7px;
+        font-size: 1rem;
+      }
+
+      .url {
+        display: block;
+        overflow: hidden;
+        color: var(--green);
+        font-size: 0.82rem;
+        text-decoration: none;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .meta {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .switch {
+        position: relative;
+        width: 58px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #18362f;
+      }
+
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #78948b;
+        transition: 160ms ease;
+      }
+
+      .switch[aria-checked="true"] {
+        border-color: var(--green);
+        background: rgba(85, 230, 177, 0.22);
+      }
+
+      .switch[aria-checked="true"]::after {
+        left: 30px;
+        background: var(--lime);
+      }
+
+      .delete {
+        width: 34px;
+        height: 34px;
+        border: 1px solid #5b3734;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--red);
+        font-size: 1rem;
+      }
+
+      .empty {
+        padding: 42px 20px;
+        border: 1px dashed var(--line);
+        border-radius: 15px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .error {
+        min-height: 20px;
+        margin: -7px 0 10px;
+        color: var(--red);
+        font-size: 0.82rem;
+      }
+
+      footer {
+        margin-top: 20px;
+        color: #708b82;
+        font-size: 0.76rem;
+        text-align: center;
+      }
+
+      @media (max-width: 760px) {
+        .shell { width: min(100% - 20px, 620px); padding-top: 24px; }
+        header { display: block; }
+        .status-pill { margin-top: 18px; }
+        .grid { grid-template-columns: 1fr; }
+        .card { grid-template-columns: minmax(0, 1fr); }
+        .actions { justify-content: space-between; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div>
+          <p class="eyebrow">GitHub Pages monitor</p>
+          <h1>Render Awake</h1>
+          <p class="subtitle">Add Render services and leave this page open. Enabled projects receive a lightweight request every five minutes.</p>
+        </div>
+        <div class="status-pill"><span class="dot"></span><span id="page-status">Monitor running</span></div>
+      </header>
+
+      <div class="notice" role="note">
+        <span aria-hidden="true">⚠</span>
+        <span><strong>This tab must stay open.</strong> GitHub Pages hosts this file, but JavaScript only runs inside your browser. Closing the tab, sleeping the device, or aggressive browser throttling stops the pings.</span>
+      </div>
+
+      <section class="grid">
+        <form class="panel form-panel" id="project-form">
+          <h2>Add a Render project</h2>
+          <p class="help">Only public HTTPS <code>*.onrender.com</code> URLs are accepted. Data stays in this browser.</p>
+
+          <label for="project-name">Project name</label>
+          <input id="project-name" name="name" placeholder="Interview Mentor" maxlength="80" required />
+
+          <label for="project-url">Render URL</label>
+          <input id="project-url" name="url" type="url" placeholder="https://my-app.onrender.com/health/live" required />
+
+          <p class="error" id="form-error" aria-live="polite"></p>
+          <button class="primary" type="submit">Add and turn on</button>
+        </form>
+
+        <section class="panel projects-panel" aria-labelledby="projects-title">
+          <div class="summary">
+            <div>
+              <h2 id="projects-title">Projects</h2>
+              <span class="count" id="active-count">0 active</span>
+            </div>
+            <button class="run-now" id="run-now" type="button">Ping now</button>
+          </div>
+          <div class="list" id="project-list"></div>
+        </section>
+      </section>
+
+      <footer>Five-minute interval · Local browser storage · No passwords or API keys needed</footer>
+    </main>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const STORAGE_KEY = "render-awake-projects-v1";
+        const PING_INTERVAL_MS = 5 * 60 * 1000;
+        const DEFAULT_PROJECT = {
+          id: crypto.randomUUID(),
+          name: "Interview Mentor",
+          url: "https://interview-mentor-premmaity.onrender.com/health/live",
+          enabled: true,
+          lastPingAt: null,
+          lastResult: "Waiting for first ping"
+        };
+
+        const form = document.querySelector("#project-form");
+        const nameInput = document.querySelector("#project-name");
+        const urlInput = document.querySelector("#project-url");
+        const errorOutput = document.querySelector("#form-error");
+        const list = document.querySelector("#project-list");
+        const count = document.querySelector("#active-count");
+        const pageStatus = document.querySelector("#page-status");
+        const runNow = document.querySelector("#run-now");
+
+        let projects = loadProjects();
+        let pingInProgress = false;
+
+        function loadProjects() {
+          try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            return Array.isArray(saved) ? saved : [DEFAULT_PROJECT];
+          } catch {
+            return [DEFAULT_PROJECT];
+          }
+        }
+
+        function saveProjects() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        }
+
+        function normalizeRenderUrl(value) {
+          const parsed = new URL(value.trim());
+          if (parsed.protocol !== "https:") throw new Error("URL must start with https://");
+          if (!parsed.hostname.endsWith(".onrender.com")) throw new Error("Use a public *.onrender.com URL");
+          if (parsed.username || parsed.password || parsed.port) throw new Error("Credentials and custom ports are not allowed");
+          parsed.hash = "";
+          return parsed.toString();
+        }
+
+        function formatTime(iso) {
+          if (!iso) return "Never";
+          return new Intl.DateTimeFormat(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          }).format(new Date(iso));
+        }
+
+        function render() {
+          list.replaceChildren();
+          const active = projects.filter((project) => project.enabled).length;
+          count.textContent = `${active} active`;
+
+          if (!projects.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty";
+            empty.textContent = "No projects yet. Add your first Render URL.";
+            list.append(empty);
+            return;
+          }
+
+          projects.forEach((project) => {
+            const card = document.createElement("article");
+            card.className = "card";
+
+            const details = document.createElement("div");
+            const title = document.createElement("h3");
+            title.textContent = project.name;
+
+            const link = document.createElement("a");
+            link.className = "url";
+            link.href = project.url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = project.url;
+
+            const meta = document.createElement("p");
+            meta.className = "meta";
+            meta.textContent = `${project.lastResult || "Waiting"} · Last ping: ${formatTime(project.lastPingAt)}`;
+            details.append(title, link, meta);
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            const toggle = document.createElement("button");
+            toggle.className = "switch";
+            toggle.type = "button";
+            toggle.setAttribute("role", "switch");
+            toggle.setAttribute("aria-checked", String(project.enabled));
+            toggle.setAttribute("aria-label", `${project.enabled ? "Turn off" : "Turn on"} ${project.name}`);
+            toggle.title = project.enabled ? "On" : "Off";
+            toggle.addEventListener("click", () => {
+              project.enabled = !project.enabled;
+              project.lastResult = project.enabled ? "Enabled" : "Paused";
+              saveProjects();
+              render();
+              if (project.enabled) pingProject(project);
+            });
+
+            const remove = document.createElement("button");
+            remove.className = "delete";
+            remove.type = "button";
+            remove.setAttribute("aria-label", `Delete ${project.name}`);
+            remove.title = "Delete";
+            remove.textContent = "×";
+            remove.addEventListener("click", () => {
+              projects = projects.filter((item) => item.id !== project.id);
+              saveProjects();
+              render();
+            });
+
+            actions.append(toggle, remove);
+            card.append(details, actions);
+            list.append(card);
+          });
+        }
+
+        async function pingProject(project) {
+          if (!project.enabled) return;
+          const controller = new AbortController();
+          const timeout = window.setTimeout(() => controller.abort(), 45000);
+          try {
+            await fetch(project.url, {
+              method: "GET",
+              mode: "no-cors",
+              cache: "no-store",
+              credentials: "omit",
+              keepalive: true,
+              signal: controller.signal
+            });
+            project.lastResult = "Ping sent";
+          } catch (error) {
+            project.lastResult = error instanceof DOMException && error.name === "AbortError"
+              ? "Ping attempted (response timeout)"
+              : "Network error";
+          } finally {
+            window.clearTimeout(timeout);
+          }
+          project.lastPingAt = new Date().toISOString();
+          saveProjects();
+          render();
+        }
+
+        async function pingAll() {
+          if (pingInProgress) return;
+          pingInProgress = true;
+          pageStatus.textContent = "Pinging active projects…";
+          await Promise.all(projects.filter((project) => project.enabled).map(pingProject));
+          pageStatus.textContent = "Monitor running";
+          pingInProgress = false;
+        }
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          errorOutput.textContent = "";
+          try {
+            const name = nameInput.value.trim();
+            if (!name) throw new Error("Project name is required");
+            const url = normalizeRenderUrl(urlInput.value);
+            if (projects.some((project) => project.url === url)) throw new Error("This URL is already added");
+            const project = {
+              id: crypto.randomUUID(),
+              name,
+              url,
+              enabled: true,
+              lastPingAt: null,
+              lastResult: "Enabled"
+            };
+            projects.unshift(project);
+            saveProjects();
+            form.reset();
+            render();
+            pingProject(project);
+          } catch (error) {
+            errorOutput.textContent = error instanceof Error ? error.message : "Check the project details";
+          }
+        });
+
+        runNow.addEventListener("click", pingAll);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") pingAll();
+        });
+        window.addEventListener("online", pingAll);
+
+        render();
+        pingAll();
+        setInterval(pingAll, PING_INTERVAL_MS);
+      })();
+    </script>
+  </body>
+</html>
