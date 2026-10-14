@@ -189,9 +189,11 @@ progress::-moz-progress-bar { background: var(--green); }
 .answer-heading { display: flex; justify-content: space-between; gap: 1rem; }
 .answer-heading h2 { margin-bottom: 1rem; }
 .autosave { display: flex; align-items: center; gap: .3rem; color: var(--muted); font-size: .72rem; white-space: nowrap; }
-.voice-tools { display: grid; grid-template-columns: auto auto; gap: .6rem; margin-bottom: 1rem; }
-.voice-tools .consent { grid-column: 1 / -1; display: flex; align-items: start; gap: .5rem; color: var(--muted); font-size: .75rem; font-weight: 500; }
-.consent input { width: auto; margin-top: .2rem; }
+.question-audio { align-self: start; display: inline-flex; align-items: center; gap: .45rem; margin: 0 0 1.2rem; padding: .65rem .8rem; border: 1px solid rgba(255,255,255,.18); border-radius: 10px; color: white; background: rgba(255,255,255,.08); }
+.question-audio:hover, .question-audio.active { border-color: var(--lime); color: var(--lime); background: rgba(213,255,112,.08); }
+.voice-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .6rem; margin-bottom: 1rem; }
+.voice-privacy { grid-column: 1 / -1; margin: .15rem 0 0; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+.voice-error { grid-column: 1 / -1; margin-top: .1rem; }
 .answer-card textarea { min-height: 250px; background: #fbfcf8; }
 .answer-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: .8rem; }
 .interview-actions { display: flex; justify-content: space-between; margin-top: 1rem; }
@@ -271,7 +273,7 @@ progress::-moz-progress-bar { background: var(--green); }
   .answer-heading { flex-direction: column; }
   .autosave { white-space: normal; }
   .voice-tools { grid-template-columns: 1fr; }
-  .voice-tools .consent { grid-column: 1; }
+  .voice-privacy, .voice-error { grid-column: 1; }
   .answer-footer { align-items: stretch; flex-direction: column; }
   .overall-score { width: 140px; }
   .danger-zone { align-items: stretch; flex-direction: column; }

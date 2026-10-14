@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const audioFixture = process.env.PLAYWRIGHT_AUDIO_FIXTURE
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -9,6 +11,18 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [{
+    name: 'chromium',
+    use: {
+      ...devices['Desktop Chrome'],
+      permissions: audioFixture ? ['microphone'] : [],
+      launchOptions: audioFixture ? {
+        args: [
+          '--use-fake-ui-for-media-stream',
+          '--use-fake-device-for-media-stream',
+          `--use-file-for-fake-audio-capture=${audioFixture}`,
+        ],
+      } : undefined,
+    },
+  }],
 })
-

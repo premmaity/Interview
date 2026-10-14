@@ -26,11 +26,10 @@ export function LandingPage() {
         </section>
         <section className="feature-band" aria-labelledby="how-it-works">
           <p className="eyebrow">How it works</p><h2 id="how-it-works">A practice loop that survives refreshes—and reality.</h2>
-          <div className="feature-grid"><article><span>01</span><h3>Configure the signal</h3><p>Choose the role, seniority, round, difficulty, and number of questions.</p></article><article><span>02</span><h3>Answer your way</h3><p>Type, dictate in supported browsers, or upload a short recording for transcription.</p></article><article><span>03</span><h3>Review the evidence</h3><p>Compare rubric coverage, concrete evidence, gaps, and a stronger answer outline.</p></article></div>
+          <div className="feature-grid"><article><span>01</span><h3>Configure the signal</h3><p>Choose the role, seniority, round, difficulty, and number of questions.</p></article><article><span>02</span><h3>Answer your way</h3><p>Type, use live dictation, or record an answer for private on-device transcription.</p></article><article><span>03</span><h3>Review the evidence</h3><p>Compare rubric coverage, concrete evidence, gaps, and a stronger answer outline.</p></article></div>
         </section>
       </main>
       <footer><span>Interview Mentor</span><span>Coaching feedback is not a hiring decision.</span></footer>
     </div>
   )
 }
-

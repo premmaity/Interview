@@ -62,7 +62,9 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; "
             "img-src 'self' data:; media-src 'self' blob:; connect-src 'self' "
-            f"{settings.frontend_origin}; script-src 'self'; style-src 'self' 'unsafe-inline'"
+            f"{settings.frontend_origin} https://huggingface.co https://*.huggingface.co "
+            "https://*.hf.co; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; "
+            "style-src 'self' 'unsafe-inline'"
         )
         if settings.app_env == "production":
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"

@@ -28,7 +28,7 @@ function AuthLayout({ title, intro, children }: { title: string; intro: string; 
           <h1>Build answers you can defend under pressure.</h1>
           <p>Structured rounds, durable transcripts, and feedback tied to what you actually said.</p>
         </div>
-        <p className="trust-line"><ShieldCheck size={18} /> Your raw audio is deleted after transcription by default.</p>
+        <p className="trust-line"><ShieldCheck size={18} /> Voice transcription runs on your device; raw audio is not uploaded.</p>
       </section>
       <section className="auth-panel">
         <div className="auth-card">
