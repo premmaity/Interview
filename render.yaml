@@ -1,0 +1,106 @@
+databases:
+  - name: interview-mentor-postgres
+    databaseName: interview
+    user: interview
+    plan: basic-256mb
+
+services:
+  - type: keyvalue
+    name: interview-mentor-redis
+    plan: starter
+    ipAllowList: []
+
+  - type: web
+    name: interview-mentor-api
+    runtime: docker
+    rootDir: Backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health/ready
+    preDeployCommand: alembic upgrade head
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interview-mentor-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: interview-mentor-redis
+          type: keyvalue
+          property: connectionString
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: none
+      - key: AI_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: EVALUATION_DISPATCH
+        value: redis
+      - key: WEB_CONCURRENCY
+        value: "2"
+
+  - type: worker
+    name: interview-mentor-worker
+    runtime: docker
+    rootDir: Backend
+    dockerfilePath: ./Dockerfile
+    dockerCommand: python -m app.worker
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interview-mentor-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: interview-mentor-redis
+          type: keyvalue
+          property: connectionString
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: none
+      - key: AI_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: EVALUATION_DISPATCH
+        value: redis
+
+  - type: web
+    name: interview-mentor-web
+    runtime: static
+    rootDir: Frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: microphone=(self)
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https:; script-src 'self'; style-src 'self' 'unsafe-inline'"

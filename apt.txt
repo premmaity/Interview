@@ -1,2 +1,0 @@
-build-essential
-portaudio19-dev

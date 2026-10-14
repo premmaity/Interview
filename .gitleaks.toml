@@ -1,0 +1,5 @@
+title = "Interview Mentor gitleaks configuration"
+
+[allowlist]
+description = "The removed historical env file is quarantined pending the documented owner-coordinated history rewrite. Current-tree env files remain scanned."
+paths = ['''^Backend/\.env$''']
